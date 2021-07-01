@@ -32,9 +32,10 @@ namespace WpfApp2
             ListParts = new List<Part>();
             string[] CboSearch = { "Código", "Descrição", "Dimensão" };
             cboSearch.ItemsSource = CboSearch;
+            
         }
 
-        private int ConvertToInt(string item)
+       private int ConvertToInt(string item)
         {
             int result = 0;
             if (int.TryParse(item, out result) && result > 0)
@@ -61,16 +62,21 @@ namespace WpfApp2
 
         }
 
+        private Part NewPart(string code, string description, string length, string width) 
+        {
+            Part newPart = new Part();
+            newPart.codePart = ConvertToInt(code);
+            newPart.lengthPart = ConvertToDecimal(length);
+            newPart.widthPart = ConvertToDecimal(width);
+            newPart.descriptionPart = description;
+            newPart.dimensionPart = $"{newPart.lengthPart} X {newPart.widthPart}";
+            return newPart;
+        }
         private void SavePart() 
         {
             if (ConvertToInt(txbCode.Text) > 0 && ConvertToDecimal(txbWidth.Text) > 0 && ConvertToDecimal(txbLength.Text) > 0)
             {
-                Part newPart = new Part();
-                newPart.codePart = ConvertToInt(txbCode.Text);
-                newPart.lengthPart = ConvertToDecimal(txbLength.Text);
-                newPart.widthPart = ConvertToDecimal(txbWidth.Text);
-                newPart.descriptionPart = txbDescription.Text;
-                newPart.dimensionPart = $"{newPart.lengthPart} X {newPart.widthPart}";
+                Part newPart = NewPart(txbCode.Text, txbDescription.Text, txbLength.Text, txbWidth.Text);
 
                 if (index == -1)
                 {
