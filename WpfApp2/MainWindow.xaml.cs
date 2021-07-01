@@ -23,18 +23,18 @@ namespace WpfApp2
     /// </summary>
     public partial class MainWindow : Window
     {
-        int indice = -1;
-        public List<Peca> ListaPecas { get; set; }
+        int index = -1;
+        public List<Part> ListParts { get; set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            ListaPecas = new List<Peca>();
-            string[] pesquisa = { "Código", "Descrição", "Dimensão" };
-            cboPesquisa.ItemsSource = pesquisa;
+            ListParts = new List<Part>();
+            string[] CboSearch = { "Código", "Descrição", "Dimensão" };
+            cboSearch.ItemsSource = CboSearch;
         }
 
-        private int ValidarInt(string item)
+        private int ConvertToInt(string item)
         {
             int result = 0;
             if (int.TryParse(item, out result) && result > 0)
@@ -46,7 +46,7 @@ namespace WpfApp2
                 return -1;
             }
         }
-        private decimal ValidarDecimal(string item)
+        private decimal ConvertToDecimal(string item)
         {
             decimal result = 0;
             string item2 = item.Replace(".", ",");
@@ -61,158 +61,169 @@ namespace WpfApp2
 
         }
 
-        private void btnSalvar_Click(object sender, RoutedEventArgs e)
+        private void btnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (ValidarInt(txbCodigo.Text) > 0 && ValidarDecimal(txbLargura.Text) > 0 && ValidarDecimal(txbComprimento.Text) > 0)
+            if (ConvertToInt(txbCode.Text) > 0 && ConvertToDecimal(txbWidth.Text) > 0 && ConvertToDecimal(txbLength.Text) > 0)
             {
-                Peca novaPeca = new Peca();
-                novaPeca.codigoPeca = ValidarInt(txbCodigo.Text);
-                novaPeca.comprimentoPeca = ValidarDecimal(txbComprimento.Text);
-                novaPeca.larguraPeca = ValidarDecimal(txbLargura.Text);
-                novaPeca.descricaoPeca = txbDescricao.Text;
-                novaPeca.dimensaoPeca = $"{novaPeca.comprimentoPeca} X {novaPeca.larguraPeca}";
+                Part newPart = new Part();
+                newPart.codePart = ConvertToInt(txbCode.Text);
+                newPart.lengthPart = ConvertToDecimal(txbLength.Text);
+                newPart.widthPart = ConvertToDecimal(txbWidth.Text);
+                newPart.descriptionPart = txbDescription.Text;
+                newPart.dimensionPart = $"{newPart.lengthPart} X {newPart.widthPart}";
 
-                if (indice == -1)
+                if (index == -1)
                 {
-                    ListaPecas.Add(novaPeca);
+                    ListParts.Add(newPart);
                 }
-                if (indice > -1)
+                if (index > -1)
                 {
-                    ListaPecas.RemoveAt(indice);
-                    ListaPecas.Insert(indice, novaPeca);
+                    ListParts.RemoveAt(index);
+                    ListParts.Insert(index, newPart);
 
                 }
-                ManipuladorArquivos.EscreverArquivo(ListaPecas);
-                LimparCampos();
-                CarregarListaPecas();
-                indice = -1;
+                ManipuladorArquivos.EscreverArquivo(ListParts);
+                ClearTextBox();
+                LoadListToDataGrid();
+                index = -1;
                 MessageBox.Show("Salvo com sucesso", "Salvar", MessageBoxButton.OK);
             }
             else
             {
-                if (ValidarInt(txbCodigo.Text) <= 0)
+                if (ConvertToInt(txbCode.Text) <= 0)
                 {
-                    MessageBox.Show("Codigo invalido digite novamente", "Erro", MessageBoxButton.OK);
-                    txbCodigo.Text = "";
+                    MessageBox.Show("Codigo invalido digite novamente", "Error", MessageBoxButton.OK);
+                    txbCode.Text = "";
                 }
-                if (ValidarDecimal(txbLargura.Text) <= 0)
+                if (ConvertToDecimal(txbWidth.Text) <= 0)
                 {
-                    MessageBox.Show("Largura invalida digite novamente", "Erro", MessageBoxButton.OK);
-                    txbLargura.Text = "";
+                    MessageBox.Show("Largura invalida digite novamente", "Error", MessageBoxButton.OK);
+                    txbWidth.Text = "";
                 }
-                if (ValidarDecimal(txbComprimento.Text) <= 0)
+                if (ConvertToDecimal(txbLength.Text) <= 0)
                 {
-                    MessageBox.Show("Comprimento invalido digite novamente", "Erro", MessageBoxButton.OK);
-                    txbComprimento.Text = "";
+                    MessageBox.Show("Comprimento invalido digite novamente", "Error", MessageBoxButton.OK);
+                    txbLength.Text = "";
                 }
             }
 
         }
-        private void LimparCampos()
+        private void ClearTextBox()
         {
-            txbCodigo.Text = "";
-            txbDescricao.Text = "";
-            txbComprimento.Text = "";
-            txbLargura.Text = "";
+            txbCode.Text = "";
+            txbDescription.Text = "";
+            txbLength.Text = "";
+            txbWidth.Text = "";
         }
-        private void CarregarListaPecas()
+        private void ClearTextBoxSearch() 
         {
-            dataGridPeca.ItemsSource = null;
-            dataGridPeca.ItemsSource = ListaPecas;
+            txbSearch.Text = "";
+        }
+        private void LoadListToDataGrid()
+        {
+            dataGridParts.ItemsSource = null;
+            dataGridParts.ItemsSource = ListParts;
         }
 
         private void shown_SourceInitialized(object sender, EventArgs e)
         {
             if (ManipuladorArquivos.LerArquivo() != null)
             {
-                ListaPecas = ManipuladorArquivos.LerArquivo();
+                ListParts = ManipuladorArquivos.LerArquivo();
             }
-            CarregarListaPecas();
+            LoadListToDataGrid();
         }
-
-        private void btnEditar_Click(object sender, RoutedEventArgs e)
+        private void EditPiece(Part peca) 
         {
-            Peca peca = (Peca)dataGridPeca.SelectedItem;
-            indice = BuscaItem(peca);
-            txbCodigo.Text = peca.codigoPeca.ToString();
-            txbDescricao.Text = peca.descricaoPeca;
-            txbComprimento.Text = peca.comprimentoPeca.ToString();
-            txbLargura.Text = peca.larguraPeca.ToString();
-
+            if (peca != null)
+            {
+                txbCode.Text = peca.codePart.ToString();
+                txbDescription.Text = peca.descriptionPart;
+                txbLength.Text = peca.lengthPart.ToString();
+                txbWidth.Text = peca.widthPart.ToString();
+            }
         }
-        private int BuscaItem(Peca peca)
+
+        private void btnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            EditPiece((Part)dataGridParts.SelectedItem);
+            index = GetIndex((Part)dataGridParts.SelectedItem);
+        }
+        private int GetIndex(Part peca)
         {
             int indice = -1;
-
-            foreach (Peca pecas in ListaPecas)
+            if (peca != null)
             {
-                indice++;
-                if (pecas.codigoPeca == peca.codigoPeca && pecas.descricaoPeca == pecas.descricaoPeca && pecas.dimensaoPeca == peca.dimensaoPeca)
+                foreach (Part pecas in ListParts)
                 {
-                    break;
+                    indice++;
+                    if (pecas.codePart == peca.codePart && pecas.descriptionPart == pecas.descriptionPart && pecas.dimensionPart == peca.dimensionPart)
+                    {
+                        break;
+                    }
                 }
             }
             return indice;
         }
 
-        private void btnExcluir_Click(object sender, RoutedEventArgs e)
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show("Tem certeza?", "Pergunta", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                ListaPecas.RemoveAt(BuscaItem((Peca)dataGridPeca.SelectedItem));
-                ManipuladorArquivos.EscreverArquivo(ListaPecas);
-                LimparCampos();
-                CarregarListaPecas();
+                ListParts.RemoveAt(GetIndex((Part)dataGridParts.SelectedItem));
+                ManipuladorArquivos.EscreverArquivo(ListParts);
+                ClearTextBox();
+                LoadListToDataGrid();
             }
         }
 
-        private IEnumerable<Peca> PesquisaItem(List<Peca> list)
+        private IEnumerable<Part> GetItem(List<Part> list)
         {
-            IEnumerable<Peca> resultado = from item in list
-                                          where item.codigoPeca == ValidarInt(txbPesquisar.Text)
+            IEnumerable<Part> result = from item in list
+                                          where item.codePart == ConvertToInt(txbSearch.Text)
                                           select item;
-            return resultado;
+            return result;
         }
-        private IEnumerable<Peca> PesquisaDescricao(List<Peca> list)
+        private IEnumerable<Part> GetDescription(List<Part> list)
         {
-            IEnumerable<Peca> resultado = from item in list
-                                          where item.descricaoPeca.Contains(txbPesquisar.Text)
+            IEnumerable<Part> result = from item in list
+                                          where item.descriptionPart.Contains(txbSearch.Text)
                                           select item;
-            return resultado;
+            return result;
         }
-        private IEnumerable<Peca> PesquisaDimensao(List<Peca> list)
+        private IEnumerable<Part> GetDimension(List<Part> list)
         {
-            IEnumerable<Peca> resultado = from item in list
-                                          where item.comprimentoPeca == ValidarDecimal(txbPesquisar.Text) || item.larguraPeca == ValidarDecimal(txbPesquisar.Text)
+            IEnumerable<Part> result = from item in list
+                                          where item.lengthPart == ConvertToDecimal(txbSearch.Text) || item.widthPart == ConvertToDecimal(txbSearch.Text)
                                           select item;
-            return resultado;
+            return result;
         }
 
 
 
-        private void btnPesquisar_Click(object sender, RoutedEventArgs e)
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
         {
-            switch (cboPesquisa.SelectedIndex)
+            switch (cboSearch.SelectedIndex)
             {
                 case 0:
-                    dataGridPeca.ItemsSource = PesquisaItem(ListaPecas);
+                    dataGridParts.ItemsSource = GetItem(ListParts);
                     break;
                 case 1:
-                    dataGridPeca.ItemsSource = PesquisaDescricao(ListaPecas);
+                    dataGridParts.ItemsSource = GetDescription(ListParts);
                     break;
                 case 2:
-                    dataGridPeca.ItemsSource = PesquisaDimensao(ListaPecas);
+                    dataGridParts.ItemsSource = GetDimension(ListParts);
                     break;
                 default:
-                    MessageBox.Show("Seleção inválida", "Erro", MessageBoxButton.OK);
+                    MessageBox.Show("Seleção inválida", "Error", MessageBoxButton.OK);
                     break;
             }
         }
 
-        private void btnLimparFiltros_Click(object sender, RoutedEventArgs e)
+        private void btnClearFilters_Click(object sender, RoutedEventArgs e)
         {
-            CarregarListaPecas();
-            txbPesquisar.Text = "";
+            LoadListToDataGrid();
+            ClearTextBoxSearch();
         }
     }
 }

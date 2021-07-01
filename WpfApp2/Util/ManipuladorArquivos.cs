@@ -11,27 +11,27 @@ namespace WpfApp2.Util
 {
     public class ManipuladorArquivos
     {
-        public static string JsonSerializar(List<Peca> peca)
+        public static string JsonSerialize(List<Part> part)
         {
-            return JsonConvert.SerializeObject(peca);
+            return JsonConvert.SerializeObject(part);
         }
 
-        public static List<Peca> JsonDesserializar(string Json)
+        public static List<Part> JsonDeserialize(string Json)
         {
-            return JsonConvert.DeserializeObject<List<Peca>>(Json);
+            return JsonConvert.DeserializeObject<List<Part>>(Json);
         }
 
-        public static void EscreverArquivo(List<Peca> pecasList)
+        public static void EscreverArquivo(List<Part> pecasList)
         {
             using (StreamWriter sw = new StreamWriter(@"C:\dados\arquivo.json"))
             {
-                sw.WriteLine(JsonSerializar(pecasList));
+                sw.WriteLine(JsonSerialize(pecasList));
             }
         }
 
-        public static List<Peca> LerArquivo()
+        public static List<Part> LerArquivo()
         {
-            List<Peca> peca;
+            List<Part> part;
 
             var strJson = "";
             try
@@ -39,9 +39,9 @@ namespace WpfApp2.Util
                 using (StreamReader sr = new StreamReader(@"C:\dados\arquivo.json"))
                 {
                     strJson = sr.ReadToEnd();
-                    peca = JsonDesserializar(strJson);
+                    part = JsonDeserialize(strJson);
                 }
-                return peca;
+                return part;
             }
             catch
             {
