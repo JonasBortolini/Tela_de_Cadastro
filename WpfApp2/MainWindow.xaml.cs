@@ -61,7 +61,7 @@ namespace WpfApp2
 
         }
 
-        private void btnSave_Click(object sender, RoutedEventArgs e)
+        private void SavePart() 
         {
             if (ConvertToInt(txbCode.Text) > 0 && ConvertToDecimal(txbWidth.Text) > 0 && ConvertToDecimal(txbLength.Text) > 0)
             {
@@ -90,23 +90,32 @@ namespace WpfApp2
             }
             else
             {
-                if (ConvertToInt(txbCode.Text) <= 0)
-                {
-                    MessageBox.Show("Codigo invalido digite novamente", "Error", MessageBoxButton.OK);
-                    txbCode.Text = "";
-                }
-                if (ConvertToDecimal(txbWidth.Text) <= 0)
-                {
-                    MessageBox.Show("Largura invalida digite novamente", "Error", MessageBoxButton.OK);
-                    txbWidth.Text = "";
-                }
-                if (ConvertToDecimal(txbLength.Text) <= 0)
-                {
-                    MessageBox.Show("Comprimento invalido digite novamente", "Error", MessageBoxButton.OK);
-                    txbLength.Text = "";
-                }
+                MessageError();
             }
+        }
 
+        private void btnSave_Click(object sender, RoutedEventArgs e)
+        {
+            SavePart();
+        }
+
+        private void MessageError() 
+        {
+            if (ConvertToInt(txbCode.Text) <= 0)
+            {
+                MessageBox.Show("Codigo invalido digite novamente", "Error", MessageBoxButton.OK);
+                txbCode.Text = "";
+            }
+            if (ConvertToDecimal(txbWidth.Text) <= 0)
+            {
+                MessageBox.Show("Largura invalida digite novamente", "Error", MessageBoxButton.OK);
+                txbWidth.Text = "";
+            }
+            if (ConvertToDecimal(txbLength.Text) <= 0)
+            {
+                MessageBox.Show("Comprimento invalido digite novamente", "Error", MessageBoxButton.OK);
+                txbLength.Text = "";
+            }
         }
         private void ClearTextBox()
         {
@@ -142,12 +151,12 @@ namespace WpfApp2
                 txbLength.Text = peca.lengthPart.ToString();
                 txbWidth.Text = peca.widthPart.ToString();
             }
+            index = GetIndex((Part)dataGridParts.SelectedItem);
         }
 
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             EditPiece((Part)dataGridParts.SelectedItem);
-            index = GetIndex((Part)dataGridParts.SelectedItem);
         }
         private int GetIndex(Part peca)
         {
@@ -162,11 +171,12 @@ namespace WpfApp2
                         break;
                     }
                 }
+
             }
             return indice;
         }
 
-        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        private void DeletePart() 
         {
             if (MessageBox.Show("Tem certeza?", "Pergunta", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
@@ -177,7 +187,12 @@ namespace WpfApp2
             }
         }
 
-        private IEnumerable<Part> GetItem(List<Part> list)
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            DeletePart();
+        }
+
+        private IEnumerable<Part> GetCode(List<Part> list)
         {
             IEnumerable<Part> result = from item in list
                                           where item.codePart == ConvertToInt(txbSearch.Text)
@@ -199,14 +214,12 @@ namespace WpfApp2
             return result;
         }
 
-
-
-        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        private void SearchPart() 
         {
             switch (cboSearch.SelectedIndex)
             {
                 case 0:
-                    dataGridParts.ItemsSource = GetItem(ListParts);
+                    dataGridParts.ItemsSource = GetCode(ListParts);
                     break;
                 case 1:
                     dataGridParts.ItemsSource = GetDescription(ListParts);
@@ -218,6 +231,12 @@ namespace WpfApp2
                     MessageBox.Show("Seleção inválida", "Error", MessageBoxButton.OK);
                     break;
             }
+        }
+
+
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+            SearchPart();
         }
 
         private void btnClearFilters_Click(object sender, RoutedEventArgs e)
