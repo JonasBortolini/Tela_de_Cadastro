@@ -21,7 +21,7 @@ namespace WpfApp2.Util
             return JsonConvert.DeserializeObject<List<Part>>(Json);
         }
 
-        public static void EscreverArquivo(List<Part> pecasList)
+        public static void Serialize(List<Part> pecasList)
         {
             using (StreamWriter sw = new StreamWriter(@"C:\dados\arquivo.json"))
             {
@@ -29,7 +29,7 @@ namespace WpfApp2.Util
             }
         }
 
-        public static List<Part> LerArquivo()
+        public static List<Part> Deserialize()
         {
             List<Part> part;
 
