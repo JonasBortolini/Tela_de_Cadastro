@@ -8,7 +8,7 @@ using WpfApp2.Util;
 
 namespace WpfApp2.ViewModel
 {
-    public class teste
+    public class ViewModelParts
     {
         public int index = -1;
         public List<Part> ListParts = new List<Part>();
@@ -72,7 +72,7 @@ namespace WpfApp2.ViewModel
                     ListParts.Insert(index, newPart);
 
                 }
-                ManipuladorArquivos.Serialize(ListParts);
+                Helper.Serialize(ListParts);
                 index = -1;
                 MessageBox.Show("Salvo com sucesso", "Salvar", MessageBoxButton.OK);
             }
@@ -101,9 +101,9 @@ namespace WpfApp2.ViewModel
         }
         public void LoadList()
         {
-            if (ManipuladorArquivos.Deserialize() != null) 
+            if (Helper.Deserialize() != null) 
             {
-                ListParts = ManipuladorArquivos.Deserialize();
+                ListParts = Helper.Deserialize();
             }
         }
 
@@ -111,27 +111,19 @@ namespace WpfApp2.ViewModel
         {
             return ListParts;
         }
-        public void EditPiece(Part peca)
+        public void EditPiece(Part part)
         {
-            index = GetIndex(peca);
+            index =GetIndex(part);
         }
 
         private int GetIndex(Part peca)
         {
-            int indice = -1;
-            if (peca != null)
+            int index = -1;
+            if (peca != null) 
             {
-                foreach (Part pecas in ListParts)
-                {
-                    indice++;
-                    if (pecas.codePart == peca.codePart && pecas.descriptionPart == pecas.descriptionPart && pecas.dimensionPart == peca.dimensionPart)
-                    {
-                        break;
-                    }
-                }
-
+                index = ListParts.IndexOf(peca);
             }
-            return indice;
+            return index;
         }
 
         public void DeletePart(Part part)
@@ -139,7 +131,7 @@ namespace WpfApp2.ViewModel
             if (MessageBox.Show("Tem certeza?", "Pergunta", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ListParts.RemoveAt(GetIndex(part));
-                ManipuladorArquivos.Serialize(ListParts);
+                Helper.Serialize(ListParts);
 
             }
         }
@@ -176,10 +168,8 @@ namespace WpfApp2.ViewModel
                     return GetDescription(ListParts, search);
                 case 2:
                     return GetDimension(ListParts, search);
-                default:
-                    MessageBox.Show("Seleção inválida", "Error", MessageBoxButton.OK);
-                    return ListParts;
             }
+            return ListParts;
         }
 
 

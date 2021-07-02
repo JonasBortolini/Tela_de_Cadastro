@@ -9,7 +9,7 @@ using WpfApp2.Model;
 
 namespace WpfApp2.Util
 {
-    public class ManipuladorArquivos
+    public class Helper
     {
         public static string JsonSerialize(List<Part> part)
         {

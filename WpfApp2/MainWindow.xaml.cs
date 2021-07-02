@@ -24,7 +24,7 @@ namespace WpfApp2
     /// </summary>
     public partial class MainWindow : Window
     {
-        public teste parts = new teste();
+        public ViewModelParts parts = new ViewModelParts();
 
         public MainWindow()
         {
@@ -51,7 +51,7 @@ namespace WpfApp2
             parts.LoadList();
             dataGridParts.ItemsSource = parts.RefreshDataGrid();
         }
-    
+
         private void btnEdit_Click(object sender, RoutedEventArgs e)
         {
             Part part = (Part)dataGridParts.SelectedItem;
